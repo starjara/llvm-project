@@ -36,6 +36,10 @@ class MCInst;
 class PassRegistry;
 
 Pass *createMVETailPredicationPass();
+
+////////
+FunctionPass *createARMLoggerPass();
+
 FunctionPass *createARMLowOverheadLoopsPass();
 FunctionPass *createARMBlockPlacementPass();
 Pass *createARMParallelDSPPass();
@@ -61,6 +65,10 @@ FunctionPass *createARMIndirectThunks();
 
 void LowerARMMachineInstrToMCInst(const MachineInstr *MI, MCInst &OutMI,
                                   ARMAsmPrinter &AP);
+
+////////
+void initializeARMLoggerPass(PassRegistry &);
+
 
 void initializeARMParallelDSPPass(PassRegistry &);
 void initializeARMLoadStoreOptPass(PassRegistry &);

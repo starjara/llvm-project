@@ -50,6 +50,8 @@ FunctionPass *createAArch64A53Fix835769();
 FunctionPass *createFalkorHWPFFixPass();
 FunctionPass *createFalkorMarkStridedAccessesPass();
 FunctionPass *createAArch64BranchTargetsPass();
+// AArch64Logger
+FunctionPass *createAArch64LoggerPass();
 
 FunctionPass *createAArch64CleanupLocalDynamicTLSPass();
 
@@ -93,6 +95,8 @@ void initializeLDTLSCleanupPass(PassRegistry&);
 void initializeSVEIntrinsicOptsPass(PassRegistry&);
 void initializeAArch64StackTaggingPass(PassRegistry&);
 void initializeAArch64StackTaggingPreRAPass(PassRegistry&);
+// AArch64Logger
+void initializeAArch64LoggerPass(PassRegistry&);
 } // end namespace llvm
 
 #endif

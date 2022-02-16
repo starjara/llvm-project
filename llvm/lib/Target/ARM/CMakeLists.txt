@@ -66,6 +66,8 @@ add_llvm_target(ARMCodeGen
   Thumb2InstrInfo.cpp
   Thumb2SizeReduction.cpp
 
+  ARMLogger.cpp
+
   LINK_COMPONENTS
   ARMDesc
   ARMInfo

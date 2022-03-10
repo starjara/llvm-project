@@ -102,9 +102,6 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeARMTarget() {
   initializeARMBlockPlacementPass(Registry);
   initializeMVEGatherScatterLoweringPass(Registry);
   initializeARMSLSHardeningPass(Registry);
-
-	//
-	initializeARMLoggerPass(Registry);
 }
 
 static std::unique_ptr<TargetLoweringObjectFile> createTLOF(const Triple &TT) {
@@ -395,7 +392,6 @@ INITIALIZE_PASS_END(ARMExecutionDomainFix, "arm-execution-domain-fix",
 
 TargetPassConfig *ARMBaseTargetMachine::createPassConfig(PassManagerBase &PM) {
   return new ARMPassConfig(*this, PM);
-
 }
 
 std::unique_ptr<CSEConfigBase> ARMPassConfig::getCSEConfig() const {
@@ -403,7 +399,6 @@ std::unique_ptr<CSEConfigBase> ARMPassConfig::getCSEConfig() const {
 }
 
 void ARMPassConfig::addIRPasses() {
-
   if (TM->Options.ThreadModel == ThreadModel::Single)
     addPass(createLowerAtomicPass());
   else
@@ -435,7 +430,6 @@ void ARMPassConfig::addIRPasses() {
   // Add Control Flow Guard checks.
   if (TM->getTargetTriple().isOSWindows())
     addPass(createCFGuardCheckPass());
-
 }
 
 void ARMPassConfig::addCodeGenPrepare() {
@@ -573,7 +567,4 @@ void ARMPassConfig::addPreEmitPass2() {
   // Identify valid longjmp targets for Windows Control Flow Guard.
   if (TM->getTargetTriple().isOSWindows())
     addPass(createCFGuardLongjmpPass());
-
-	//
-	addPass(createARMLoggerPass());
 }

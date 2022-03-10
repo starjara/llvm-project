@@ -37,8 +37,6 @@ class PassRegistry;
 
 Pass *createMVETailPredicationPass();
 
-////////
-FunctionPass *createARMLoggerPass();
 
 FunctionPass *createARMLowOverheadLoopsPass();
 FunctionPass *createARMBlockPlacementPass();
@@ -62,12 +60,11 @@ createARMInstructionSelector(const ARMBaseTargetMachine &TM, const ARMSubtarget 
 Pass *createMVEGatherScatterLoweringPass();
 FunctionPass *createARMSLSHardeningPass();
 FunctionPass *createARMIndirectThunks();
+////////
+FunctionPass *createARMLoggerPass();
 
 void LowerARMMachineInstrToMCInst(const MachineInstr *MI, MCInst &OutMI,
                                   ARMAsmPrinter &AP);
-
-////////
-void initializeARMLoggerPass(PassRegistry &);
 
 
 void initializeARMParallelDSPPass(PassRegistry &);
@@ -84,6 +81,8 @@ void initializeARMBlockPlacementPass(PassRegistry &);
 void initializeMVETailPredicationPass(PassRegistry &);
 void initializeMVEGatherScatterLoweringPass(PassRegistry &);
 void initializeARMSLSHardeningPass(PassRegistry &);
+////////
+void initializeARMLoggerPass(PassRegistry &);
 
 } // end namespace llvm
 

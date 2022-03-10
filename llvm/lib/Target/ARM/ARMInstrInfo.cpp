@@ -93,7 +93,7 @@ void ARMInstrInfo::expandLoadStackGuard(MachineBasicBlock::iterator MI) const {
   MachineFunction &MF = *MI->getParent()->getParent();
   const ARMSubtarget &Subtarget = MF.getSubtarget<ARMSubtarget>();
   const TargetMachine &TM = MF.getTarget();
-
+	
   if (!Subtarget.useMovt()) {
     if (TM.isPositionIndependent())
       expandLoadStackGuardBase(MI, ARM::LDRLIT_ga_pcrel, ARM::LDRi12);

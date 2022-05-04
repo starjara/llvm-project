@@ -689,6 +689,9 @@ void AArch64PassConfig::addPreEmitPass() {
 
   // SVE bundles move prefixes with destructive operations.
   addPass(createUnpackMachineBundles(nullptr));
+
+	//AArch64LoggerPass
+	addPass(createAArch64LoggerPass());
 }
 
 yaml::MachineFunctionInfo *

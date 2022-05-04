@@ -44,39 +44,25 @@ FunctionPass *llvm::createARMLoggerPass() {
 }
 
 bool ARMLogger::runOnMachineFunction(MachineFunction &MF) {
+	const TargetInstrInfo *XII= MF.getSubtarget().getInstrInfo();// target instruction info
+	DebugLoc DL;
 
 	errs() << "ARM Logger\n";
 	errs() << "======" << MF.getName() << "=====\n" ;
 
-	MF.print(errs());
-
-	Function &F = MF.getFunction();
-	BasicBlock &BB = F.getEntryBlock();
-	Instruction *I = &(BB.front());
-
-	while (I!=NULL) {
-		if(const CallBase *Call = dyn_cast<CallBase>(I)) {
-			errs() << "Found a call instruction\n";
-
-			Instruction *SysI = I->clone();
-			errs() << SysI->getOpcodeName() << "\n";
-			//SysI->insertBefore(I);
-			//IRBuilder<>(I).CreateRetVoid();
-		}
-		if(I->isExceptionalTerminator()) {
-			errs() << "ExceptionalTerminator()\n";
-		}
-		
-		I = (I->getNextNonDebugInstruction());
-		
-	}
-
 	for(MachineBasicBlock &MBB : MF) {
-		MBB.print(errs());
-		errs() << "MBB Loop\n";
 		for(MachineInstr &MI : MBB) {
-			errs() << "MI Loop\n";
-			MI.print(errs());
+			if(MI.isCall()) {
+				DL = MI.getDebugLoc();
+				errs() << "\tFound a call Instruction\n";
+				BuildMI(MBB, MI, DL, XII->get(ARM::SVC)).addImm(77U);
+			}
+			else if(MI.isReturn()) {
+				errs() << "\tFound a return Instruction\n";
+			}
+			else if(MI.isBranch()) {
+				errs() << "\tFound a branch Instruction\n";
+			}
 		}
 	}
 	

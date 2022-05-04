@@ -36,18 +36,26 @@ FunctionPass *llvm::createAArch64LoggerPass() {
 
 bool AArch64Logger::runOnMachineFunction(MachineFunction &MF) {
 
+	const TargetLibraryInfo *TLI;
+	const AArch64InstrInfo *TII = static_cast<const AArch64InstrInfo *>(MF.getSubtarget().getInstrInfo());
+
+	errs() << "========" << MF.getName().str() << "========\n";
+//	Need to find proper places to insert the syscall
 	for (MachineBasicBlock &MBB : MF) {
-		if(&MBB == &*MF.begin()) {
-			errs() << "Begin of the Machine Function\n";
-
-			const AArch64InstrInfo *TII = static_cast<const AArch64InstrInfo *>(
-				MBB.getParent()->getSubtarget().getInstrInfo());
-
-			BuildMI(MBB, MBB.begin(), MBB.findDebugLoc(MBB.begin()), 
-				TII->get(AArch64::HINT)).addImm(0);
-				
-		}
-	}
+		for(MachineInstr &MI : MBB) {
+			if(MI.isCall()) {
+				errs() << "\tFound a call Instruction\n";
+				//MachineOperand MO = MI.getOperand(0);
+				//BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(AArch64::ADR), AArch64::X8).addGlobalAddress(MO.getGlobal());
+				//BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(AArch64::BL)).addExternalSymbol("TEE_BtsCall");
+				//BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(AArch64::BL)).addExternalSymbol("_utee_bts_call");
+				BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(AArch64::SVC)).addImm(71);
+			}
+			else if(MI.isReturn()) {
+				BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(AArch64::SVC)).addImm(72);
+			}
+		}// End of MI
+	}// End of MBB
 
 	return true;
 }

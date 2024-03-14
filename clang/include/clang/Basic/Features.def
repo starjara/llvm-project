@@ -233,6 +233,8 @@ FEATURE(modules, LangOpts.Modules)
 FEATURE(safe_stack, LangOpts.Sanitize.has(SanitizerKind::SafeStack))
 FEATURE(shadow_call_stack,
         LangOpts.Sanitize.has(SanitizerKind::ShadowCallStack))
+FEATURE(shadow_call_stack_verse,
+        LangOpts.Sanitize.has(SanitizerKind::ShadowCallStackVerse))
 FEATURE(tls, PP.getTargetInfo().isTLSSupported())
 FEATURE(underlying_type, LangOpts.CPlusPlus)
 FEATURE(experimental_library, LangOpts.ExperimentalLibrary)

@@ -484,6 +484,10 @@ llvm::Function *CodeGenModule::CreateGlobalInitOrCleanUpFunction(
       !isInNoSanitizeList(SanitizerKind::ShadowCallStack, Fn, Loc))
     Fn->addFnAttr(llvm::Attribute::ShadowCallStack);
 
+  if (getLangOpts().Sanitize.has(SanitizerKind::ShadowCallStackVerse) &&
+      !isInNoSanitizeList(SanitizerKind::ShadowCallStackVerse, Fn, Loc))
+    Fn->addFnAttr(llvm::Attribute::ShadowCallStackVerse);
+
   return Fn;
 }
 

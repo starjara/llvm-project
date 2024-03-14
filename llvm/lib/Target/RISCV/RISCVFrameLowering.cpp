@@ -37,7 +37,7 @@ static const Register AllPopRegs[] = {
 static void emitSCSPrologue(MachineFunction &MF, MachineBasicBlock &MBB,
                             MachineBasicBlock::iterator MI,
                             const DebugLoc &DL) {
-  if (!MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack))
+  if (!(MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack) || MF.getFunction().hasFnAttribute(Attribute::ShadowCallStackVerse)))
     return;
 
   const auto &STI = MF.getSubtarget<RISCVSubtarget>();
@@ -56,19 +56,63 @@ static void emitSCSPrologue(MachineFunction &MF, MachineBasicBlock &MBB,
   const RISCVInstrInfo *TII = STI.getInstrInfo();
   bool IsRV64 = STI.hasFeature(RISCV::Feature64Bit);
   int64_t SlotSize = STI.getXLen() / 8;
-  // Store return address to shadow call stack
-  // addi    gp, gp, [4|8]
-  // s[w|d]  ra, -[4|8](gp)
+
+  /*
+  // Set gp to 0x80000000
   BuildMI(MBB, MI, DL, TII->get(RISCV::ADDI))
       .addReg(SCSPReg, RegState::Define)
-      .addReg(SCSPReg)
-      .addImm(SlotSize)
+      .addReg(llvm::RISCV::X0)
+      .addImm(0x8)
       .setMIFlag(MachineInstr::FrameSetup);
-  BuildMI(MBB, MI, DL, TII->get(IsRV64 ? RISCV::SD : RISCV::SW))
-      .addReg(RAReg)
-      .addReg(SCSPReg)
-      .addImm(-SlotSize)
+
+  BuildMI(MBB, MI, DL, TII->get(RISCV::SLLI))
+      .addReg(SCSPReg, RegState::Define)
+      .addReg(SCSPReg, RegState::Define)
+      .addImm(0x1C)
       .setMIFlag(MachineInstr::FrameSetup);
+  */
+
+  // Store the return address to the shadow call stack
+  if (MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack)) {
+    // Traditioal instrcution sequece 
+    // addi    gp, gp, [4|8]
+    // s[w|d]  ra, -[4|8](gp)
+  
+    // addi    gp, gp, [4|8]
+    BuildMI(MBB, MI, DL, TII->get(RISCV::ADDI))
+        .addReg(SCSPReg, RegState::Define)
+        .addReg(SCSPReg)
+        .addImm(SlotSize)
+        .setMIFlag(MachineInstr::FrameSetup);
+
+    // sd ra -slotsize(gp)
+    BuildMI(MBB, MI, DL, TII->get(IsRV64 ? RISCV::SD : RISCV::SW))
+        .addReg(RAReg)
+        .addReg(SCSPReg)
+        .addImm(-SlotSize)
+        .setMIFlag(MachineInstr::FrameSetup);
+  } // END OF if
+  else if (MF.getFunction().hasFnAttribute(Attribute::ShadowCallStackVerse)) {
+    // Changed instruction sequece 
+    // hsv_[w|d]  ra, gp
+    // addi    gp, gp, [4|8]
+    
+    // hsv_[w|d]  ra, gp
+    BuildMI(MBB, MI, DL, TII->get(IsRV64 ? RISCV::HSV_D : RISCV::HSV_W))
+        .addReg(RAReg)
+        .addReg(SCSPReg)
+        //.addReg(ShadowReg)
+        //.addImm(-SlotSize)
+        .setMIFlag(MachineInstr::FrameSetup);
+  
+    // addi    gp, gp, [4|8]
+    BuildMI(MBB, MI, DL, TII->get(RISCV::ADDI))
+        .addReg(SCSPReg, RegState::Define)
+        .addReg(SCSPReg)
+        .addImm(SlotSize)
+        .setMIFlag(MachineInstr::FrameSetup);
+  } // END OF else if
+
 
   // Emit a CFI instruction that causes SlotSize to be subtracted from the value
   // of the shadow stack pointer when unwinding past this frame.
@@ -94,7 +138,7 @@ static void emitSCSPrologue(MachineFunction &MF, MachineBasicBlock &MBB,
 static void emitSCSEpilogue(MachineFunction &MF, MachineBasicBlock &MBB,
                             MachineBasicBlock::iterator MI,
                             const DebugLoc &DL) {
-  if (!MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack))
+  if (!(MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack) || MF.getFunction().hasFnAttribute(Attribute::ShadowCallStackVerse)))
     return;
 
   const auto &STI = MF.getSubtarget<RISCVSubtarget>();
@@ -111,19 +155,48 @@ static void emitSCSEpilogue(MachineFunction &MF, MachineBasicBlock &MBB,
   const RISCVInstrInfo *TII = STI.getInstrInfo();
   bool IsRV64 = STI.hasFeature(RISCV::Feature64Bit);
   int64_t SlotSize = STI.getXLen() / 8;
-  // Load return address from shadow call stack
-  // l[w|d]  ra, -[4|8](gp)
-  // addi    gp, gp, -[4|8]
-  BuildMI(MBB, MI, DL, TII->get(IsRV64 ? RISCV::LD : RISCV::LW))
-      .addReg(RAReg, RegState::Define)
-      .addReg(SCSPReg)
-      .addImm(-SlotSize)
-      .setMIFlag(MachineInstr::FrameDestroy);
-  BuildMI(MBB, MI, DL, TII->get(RISCV::ADDI))
-      .addReg(SCSPReg, RegState::Define)
-      .addReg(SCSPReg)
-      .addImm(-SlotSize)
-      .setMIFlag(MachineInstr::FrameDestroy);
+
+  // Load the return address from the shadow call stack
+  if (MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack)) {
+    // Traditional instruction sequence
+    // l[w|d]  ra, -[4|8](gp)
+    // addi    gp, gp, -[4|8]
+    
+    // l[w|d]  ra, -[4|8](gp)
+    BuildMI(MBB, MI, DL, TII->get(IsRV64 ? RISCV::LD : RISCV::LW))
+        .addReg(RAReg, RegState::Define)
+        .addReg(SCSPReg)
+        .addImm(-SlotSize)
+        .setMIFlag(MachineInstr::FrameDestroy);
+
+    // addi    gp, gp, -[4|8]
+    BuildMI(MBB, MI, DL, TII->get(RISCV::ADDI))
+        .addReg(SCSPReg, RegState::Define)
+        .addReg(SCSPReg)
+        .addImm(-SlotSize)
+        .setMIFlag(MachineInstr::FrameDestroy);
+  } // END OF if
+  else if (MF.getFunction().hasFnAttribute(Attribute::ShadowCallStackVerse)) {
+    // changed instruction sequece
+    // addi    gp, gp, -[4|8]
+    // hlv_[w|d]  ra, gp
+  
+    // addi    gp, gp, -[4|8]
+    BuildMI(MBB, MI, DL, TII->get(RISCV::ADDI))
+        .addReg(SCSPReg, RegState::Define)
+        .addReg(SCSPReg)
+        .addImm(-SlotSize)
+        .setMIFlag(MachineInstr::FrameDestroy);
+
+    // hlv_[w|d]  ra, gp
+    BuildMI(MBB, MI, DL, TII->get(IsRV64 ? RISCV::HLV_D : RISCV::HLV_W))
+        .addReg(RAReg)
+        .addReg(SCSPReg)
+        //.addImm(-SlotSize)
+        .setMIFlag(MachineInstr::FrameSetup);
+  } // END OF elseif
+
+  
   // Restore the SCS pointer
   unsigned CFIIndex = MF.addFrameInst(MCCFIInstruction::createRestore(
       nullptr, STI.getRegisterInfo()->getDwarfRegNum(SCSPReg, /*IsEH*/ true)));

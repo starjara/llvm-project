@@ -136,6 +136,9 @@ SANITIZER("safe-stack", SafeStack)
 // Shadow Call Stack
 SANITIZER("shadow-call-stack", ShadowCallStack)
 
+// Shadow Call Stack with verse
+SANITIZER("shadow-call-stack-verse", ShadowCallStackVerse)
+
 // -fsanitize=undefined includes all the sanitizers which have low overhead, no
 // ABI or address space layout implications, and only catch undefined behavior.
 SANITIZER_GROUP("undefined", Undefined,

@@ -1746,6 +1746,7 @@ static uint64_t getRawAttributeMask(Attribute::AttrKind Val) {
     return 1ULL << 62;
   case Attribute::NoFree:
     return 1ULL << 63;
+  case Attribute::ShadowCallStackVerse: return 1ULL << 59;
   default:
     // Other attributes are not supported in the raw format,
     // as we ran out of space.
@@ -2014,6 +2015,8 @@ static Attribute::AttrKind getAttrFromCode(uint64_t Code) {
     return Attribute::SafeStack;
   case bitc::ATTR_KIND_SHADOWCALLSTACK:
     return Attribute::ShadowCallStack;
+  case bitc::ATTR_KIND_SHADOWCALLSTACKVERSE:
+    return Attribute::ShadowCallStackVerse;
   case bitc::ATTR_KIND_STRICT_FP:
     return Attribute::StrictFP;
   case bitc::ATTR_KIND_STRUCT_RET:

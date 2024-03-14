@@ -233,6 +233,9 @@ def SafeStack : EnumAttr<"safestack", [FnAttr]>;
 /// Shadow Call Stack protection.
 def ShadowCallStack : EnumAttr<"shadowcallstack", [FnAttr]>;
 
+/// Shadow Call Stack Verse protection.
+def ShadowCallStackVerse : EnumAttr<"shadowcallstackverse", [FnAttr]>;
+
 /// Sign extended before/after call.
 def SExt : EnumAttr<"signext", [ParamAttr, RetAttr]>;
 
@@ -344,6 +347,7 @@ def : CompatRule<"isEqual<SanitizeHWAddressAttr>">;
 def : CompatRule<"isEqual<SanitizeMemTagAttr>">;
 def : CompatRule<"isEqual<SafeStackAttr>">;
 def : CompatRule<"isEqual<ShadowCallStackAttr>">;
+def : CompatRule<"isEqual<ShadowCallStackVerseAttr>">;
 def : CompatRule<"isEqual<UseSampleProfileAttr>">;
 def : CompatRule<"isEqual<NoProfileAttr>">;
 def : CompatRule<"checkDenormMode">;

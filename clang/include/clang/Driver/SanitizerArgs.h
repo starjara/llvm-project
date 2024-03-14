@@ -124,6 +124,9 @@ public:
     return Sanitizers.has(SanitizerKind::ShadowCallStack);
   }
 
+  bool hasShadowCallStackVerse() const {
+    return Sanitizers.has(SanitizerKind::ShadowCallStackVerse);
+  }
   bool requiresPIE() const;
   bool needsUnwindTables() const;
   bool needsLTO() const;

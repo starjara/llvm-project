@@ -70,6 +70,7 @@ Defined *ElfSym::mipsGp;
 Defined *ElfSym::mipsGpDisp;
 Defined *ElfSym::mipsLocalGp;
 Defined *ElfSym::riscvGlobalPointer;
+Defined *ElfSym::riscvVerseShadowPointer;
 Defined *ElfSym::relaIpltStart;
 Defined *ElfSym::relaIpltEnd;
 Defined *ElfSym::tlsModuleBase;

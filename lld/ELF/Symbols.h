@@ -518,6 +518,9 @@ struct ElfSym {
   // __global_pointer$ for RISC-V.
   static Defined *riscvGlobalPointer;
 
+  // __verse_shadow_pointer$ for RISC-V.
+  static Defined *riscvVerseShadowPointer;
+
   // __rel{,a}_iplt_{start,end} symbols.
   static Defined *relaIpltStart;
   static Defined *relaIpltEnd;

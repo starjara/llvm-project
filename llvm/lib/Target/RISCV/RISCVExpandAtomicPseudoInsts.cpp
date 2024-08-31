@@ -108,6 +108,7 @@ bool RISCVExpandAtomicPseudo::expandMI(MachineBasicBlock &MBB,
   // RISCVInstrInfo::getInstSizeInBytes expects that the total size of the       
   // expanded instructions for each pseudo is correct in the Size field of the   
   // tablegen definition for the pseudo.
+
   switch (MBBI->getOpcode()) {
   case RISCV::PseudoAtomicLoadNand32:
     return expandAtomicBinOp(MBB, MBBI, AtomicRMWInst::Nand, false, 32,

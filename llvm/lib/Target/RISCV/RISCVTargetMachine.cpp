@@ -90,6 +90,8 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVInitUndefPass(*PR);
   initializeRISCVMoveMergePass(*PR);
   initializeRISCVPushPopOptPass(*PR);
+  //initializeRISCVAnnotPass(*PR);
+  //initializeRISCVAnnotOptPass(*PR);
 }
 
 static StringRef computeDataLayout(const Triple &TT) {
@@ -289,6 +291,8 @@ void RISCVPassConfig::addIRPasses() {
     addPass(createRISCVCodeGenPreparePass());
   }
 
+  //addPass(createRISCVAnnotFuncPass());
+
   TargetPassConfig::addIRPasses();
 }
 
@@ -371,6 +375,7 @@ void RISCVPassConfig::addPreEmitPass2() {
   addPass(createUnpackMachineBundles([&](const MachineFunction &MF) {
     return MF.getFunction().getParent()->getModuleFlag("kcfi");
   }));
+  //addPass(createRISCVAnnotOptPass());
 }
 
 void RISCVPassConfig::addMachineSSAOptimization() {
@@ -389,6 +394,7 @@ void RISCVPassConfig::addPreRegAlloc() {
     addPass(createRISCVMergeBaseOffsetOptPass());
   addPass(createRISCVInsertVSETVLIPass());
   addPass(createRISCVInsertReadWriteCSRPass());
+  //addPass(createRISCVAnnotPass());
 }
 
 void RISCVPassConfig::addOptimizedRegAlloc() {

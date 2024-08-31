@@ -26,6 +26,9 @@ add_llvm_target(RISCVCodeGen
   RISCVExpandPseudoInsts.cpp
   RISCVFrameLowering.cpp
   #  RISCVFrameLoweringVerse.cpp # Custom file
+  RISCVAnnot.cpp
+  RISCVAnnotOpt.cpp
+  RISCVAnnotFunc.cpp
   RISCVGatherScatterLowering.cpp
   RISCVInsertVSETVLI.cpp
   RISCVInsertReadWriteCSR.cpp

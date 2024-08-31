@@ -76,10 +76,20 @@ void initializeRISCVMoveMergePass(PassRegistry &);
 FunctionPass *createRISCVPushPopOptimizationPass();
 void initializeRISCVPushPopOptPass(PassRegistry &);
 
+FunctionPass *createRISCVAnnotPass();
+void initializeRISCVAnnotPass(PassRegistry &);
+
+FunctionPass *createRISCVAnnotOptPass();
+void initializeRISCVAnnotOptPass(PassRegistry &);
+
+FunctionPass *createRISCVAnnotFuncPass();
+void initializeRISCVAnnotFuncPass(PassRegistry &);
+  
 InstructionSelector *createRISCVInstructionSelector(const RISCVTargetMachine &,
                                                     RISCVSubtarget &,
                                                     RISCVRegisterBankInfo &);
 void initializeRISCVDAGToDAGISelPass(PassRegistry &);
+
 } // namespace llvm
 
 #endif

@@ -106,9 +106,8 @@ static void emitSCSPrologue(MachineFunction &MF, MachineBasicBlock &MBB,
         //.addReg(ShadowReg)
         //.addImm(-SlotSize)
         .setMIFlag(MachineInstr::FrameSetup);
-  
-    // addi    gp, gp, [4|8]
     /*
+    // addi    gp, gp, [4|8]
     BuildMI(MBB, MI, DL, TII->get(RISCV::ADDI))
         .addReg(SCSPReg, RegState::Define)
         .addReg(SCSPReg)
@@ -184,21 +183,19 @@ static void emitSCSEpilogue(MachineFunction &MF, MachineBasicBlock &MBB,
     // changed instruction sequece
     // addi    gp, gp, -[4|8]
     // hlv_[w|d]  ra, gp
-  
-    // addi    gp, gp, -[4|8]
     /*
+    // addi    gp, gp, -[4|8]
     BuildMI(MBB, MI, DL, TII->get(RISCV::ADDI))
         .addReg(SCSPReg, RegState::Define)
         .addReg(SCSPReg)
         .addImm(-SlotSize)
         .setMIFlag(MachineInstr::FrameDestroy);
     */
-
     // hlv_[w|d]  ra, gp ->
     // hlv_[w|d]  ra, sp
     BuildMI(MBB, MI, DL, TII->get(IsRV64 ? RISCV::HLV_D : RISCV::HLV_W))
         .addReg(RAReg)
-        //.addReg(SCSPReg)
+       // .addReg(SCSPReg)
         .addReg(RISCV::X2)
         //.addImm(-SlotSize)
         .setMIFlag(MachineInstr::FrameSetup);

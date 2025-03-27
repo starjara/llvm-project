@@ -3094,7 +3094,7 @@ llvm::Constant *CodeGenModule::EmitAnnotationString(StringRef Str) {
   llvm::Constant *&AStr = AnnotationStrings[Str];
   if (AStr)
     return AStr;
-
+  
   // Not found yet, create a new global.
   llvm::Constant *s = llvm::ConstantDataArray::getString(getLLVMContext(), Str);
   auto *gv = new llvm::GlobalVariable(

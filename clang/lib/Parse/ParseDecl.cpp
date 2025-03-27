@@ -200,8 +200,9 @@ void Parser::ParseGNUAttributes(ParsedAttributes &Attrs,
         ;
 
       // Expect an identifier or declaration specifier (const, int, etc.)
-      if (Tok.isAnnotation())
+      if (Tok.isAnnotation()) {
         break;
+      }
       if (Tok.is(tok::code_completion)) {
         cutOffParsing();
         Actions.CodeCompleteAttribute(AttributeCommonInfo::Syntax::AS_GNU);

@@ -2283,6 +2283,7 @@ bool IRTranslator::translateKnownIntrinsic(const CallInst &CI, Intrinsic::ID ID,
   case Intrinsic::launder_invariant_group:
   case Intrinsic::strip_invariant_group: {
     // Drop the intrinsic, but forward the value.
+    errs() << "Annotated IRT\n";
     MIRBuilder.buildCopy(getOrCreateVReg(CI),
                          getOrCreateVReg(*CI.getArgOperand(0)));
     return true;
@@ -2291,6 +2292,7 @@ bool IRTranslator::translateKnownIntrinsic(const CallInst &CI, Intrinsic::ID ID,
   case Intrinsic::experimental_noalias_scope_decl:
   case Intrinsic::var_annotation:
   case Intrinsic::sideeffect:
+    errs() << "Var annot\n";
     // Discard annotate attributes, assumptions, and artificial side-effects.
     return true;
   case Intrinsic::read_volatile_register:

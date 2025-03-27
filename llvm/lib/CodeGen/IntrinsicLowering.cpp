@@ -325,12 +325,14 @@ void IntrinsicLowering::LowerIntrinsicCall(CallInst *CI) {
   case Intrinsic::annotation:
   case Intrinsic::ptr_annotation:
     // Just drop the annotation, but forward the value
+    errs() << " Annotated\n";
     CI->replaceAllUsesWith(CI->getOperand(0));
     break;
 
   case Intrinsic::assume:
   case Intrinsic::experimental_noalias_scope_decl:
   case Intrinsic::var_annotation:
+    errs() << "Annotated Var\n";
     break;   // Strip out these intrinsics
 
   case Intrinsic::memcpy: {
